@@ -140,6 +140,153 @@ lsblk -f
 
 ### Sistemin kurulumu
 
+```
+pacstrap -K /mnt intel-ucode btrfs-progs base base-devel linux-zen linux linux-zen-headers linux-headers linux-firmware linux-api-headers xdg-user-dirs xorg xorg-xinit xorg-appres sysfsutils xorg-xwayland wayland-utils xorg-xauth vim nano p7zip unzip unrar zip udisks2 gvfs-afc gvfs-mtp gvfs-gphoto2 gphoto2 sudo mkinitcpio git wget curl networkmanager openssh mlocate fastfetch inxi zsh noto-fonts ttf-dejavu ttf-dejavu-nerd ttf-roboto ttf-roboto-mono ttf-roboto-mono-nerd terminus-font gnu-free-fonts noto-fonts noto-fonts-emoji noto-fonts-extra ttf-font-awesome ttf-jetbrains-mono ttf-jetbrains-mono-nerd ttf-liberation ttf-liberation-mono-nerd ttf-nerd-fonts-symbols-mono ttf-nerd-fonts-symbols-common ttf-roboto ttf-roboto-mono ttf-roboto-mono-nerd awesome-terminal-fonts ttf-font-awesome otf-font-awesome pipewire pipewire-pulse pipewire-alsa pipewire-audio pipewire-jack lib32-pipewire lib32-pipewire-jack wireplumber alsa-tools alsa-utils alsa-firmware
+
+genfstab -LUp /mnt >> /mnt/etc/fstab
+```
+
+Pacstrap komutu sistemi kurar çekirdek olarak linux ve linux-zen çekirdeklerini seçtik.
+<br>
+genfstab komutu fstab tablosunu oluşturur
+
+## 2. Aşama
+### Chroot ortamına geçiş
+
+```
+cp /etc/zsh/zshrc /mnt/root/.zshrc
+cp /etc/zsh/zprofile /mnt/root/.zprofile
+arch-chroot /mnt
+```
+
+### Chroot içindeyiz
+
+```
+keyboardlayout="trq"  
+
+echo "zaman ayarlaniyor"
+
+pacman -Sy reflector curl --noconfirm --needed
+
+timezone=$(curl -s https://ipinfo.io/timezone)
+
+hostname="ArchLinux"
+
+read -p "Kullanici adinizi giriniz: " username
+
+ln -sf /usr/share/zoneinfo/$timezone /etc/localtime
+
+hwclock --systohc
+
+echo "Start reflector..."
+
+reflector -c "Turkey," -p https -a 3 --sort rate --save /etc/pacman.d/mirrorlist
+
+pacman -Syy
+
+pacman --noconfirm -S grub efibootmgr dosfstools mtools os-prober efitools --noconfirm --needed
+
+echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+
+locale-gen
+
+echo "LANG=en_US.UTF-8" >> /etc/locale.conf
+
+echo "FONT=ter-v18n" >> /etc/vconsole.conf
+
+echo "KEYMAP=$keyboardlayout" >> /etc/vconsole.conf
+
+echo "$hostname" >> /etc/hostname
+
+echo "127.0.0.1 localhost" >> /etc/hosts
+
+echo "::1       localhost" >> /etc/hosts
+
+echo "127.0.1.1 $hostname.localdomain $hostname" >> /etc/hosts
+
+chsh -s /usr/bin/zsh 
+
+echo "root sifreni gir"
+
+passwd root
+
+echo "$username kullanicisinin sifresini gir"
+
+useradd -m -G wheel $username
+
+chsh -s /usr/bin/zsh $username
+
+passwd $username
+
+cp /root/.zshrc /home/$username/
+
+cp /root/.zprofile /home/$username/
+
+systemctl enable NetworkManager
+
+systemctl enable bluetooth
+
+systemctl enable cups.service
+
+systemctl enable sshd
+
+systemctl enable avahi-daemon
+
+systemctl enable reflector.timer
+
+systemctl enable fstrim.timer
+
+systemctl enable firewalld
+
+systemctl enable acpid
+
+grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB --removable
+
+grub-mkconfig -o /boot/grub/grub.cfg
+
+sed -i 's/BINARIES=()/BINARIES=(btrfs setfont)/g' /etc/mkinitcpio.conf
+
+mkinitcpio -P
+
+echo "Uncomment %wheel group in sudoers (around line 85):"
+
+echo "Before: #%wheel ALL=(ALL:ALL) ALL"
+
+echo "After:  %wheel ALL=(ALL:ALL) ALL"
+
+echo ""
+
+read -p "Open sudoers now?" c
+
+EDITOR=nano sudo -E visudo
+
+usermod -aG wheel $username
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
