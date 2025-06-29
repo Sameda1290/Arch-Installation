@@ -224,7 +224,7 @@ Bu kısımda root şifresini, kullanıcımızı ve şifresini oluşturduk şimdi
 > $username kısmına kullanıcı adınızı girmelisiniz
 
 
-
+Sırada servisleri ayarlayalım ve grub'ı kuralım
 ```
 systemctl enable NetworkManager
 
@@ -247,28 +247,34 @@ systemctl enable acpid
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB --removable
 
 grub-mkconfig -o /boot/grub/grub.cfg
+```
+Burada ipucu yok devam edelim.
 
+```
 sed -i 's/BINARIES=()/BINARIES=(btrfs setfont)/g' /etc/mkinitcpio.conf
 
 mkinitcpio -P
+```
+Burada bazı modülleri ayarladık
 
-echo "Uncomment %wheel group in sudoers (around line 85):"
 
-echo "Before: #%wheel ALL=(ALL:ALL) ALL"
-
-echo "After:  %wheel ALL=(ALL:ALL) ALL"
-
-echo ""
-
-read -p "Open sudoers now?" c
-
+Şimdi kendimize sudo yetkisi verelim
+```
 EDITOR=nano sudo -E visudo
+```
+#%wheel ALL=(ALL:ALL) ALL
 
+Buradaki # işaretini kaldırıyoruz.
+
+Şimdi kendimize wheel yetkisini tanımlayalım.
+```
 usermod -aG wheel $username
 ```
 
+2. Aşamanın sonu artık nvidia sürücülerini kurmak için 3. Aşamaya geçebiliriz
 
-
+## 3. Aşama
+### 
 
 
 
