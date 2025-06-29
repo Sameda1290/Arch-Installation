@@ -162,30 +162,20 @@ arch-chroot /mnt
 ### Chroot içindeyiz
 
 ```
-keyboardlayout="trq"  
-
-echo "zaman ayarlaniyor"
-
-pacman -Sy reflector curl --noconfirm --needed
-
-timezone=$(curl -s https://ipinfo.io/timezone)
-
-hostname="ArchLinux"
-
-read -p "Kullanici adinizi giriniz: " username
+pacman -Sy reflector curl grub efibootmgr dosfstools mtools os-prober efitools
 
 ln -sf /usr/share/zoneinfo/$timezone /etc/localtime
 
 hwclock --systohc
 
-echo "Start reflector..."
-
 reflector -c "Turkey," -p https -a 3 --sort rate --save /etc/pacman.d/mirrorlist
+```
+> [!TIP]
+> $timezone kısmına bölgenizi yazınız türkiyedeyseniz Europe/Istanbul yazmalısınız
 
-pacman -Syy
+Burada gerekli bazı paketleri kuruyoruz ve reflector'u çalıştırıyoruz
 
-pacman --noconfirm -S grub efibootmgr dosfstools mtools os-prober efitools --noconfirm --needed
-
+```
 echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 
 locale-gen
@@ -203,7 +193,12 @@ echo "127.0.0.1 localhost" >> /etc/hosts
 echo "::1       localhost" >> /etc/hosts
 
 echo "127.0.1.1 $hostname.localdomain $hostname" >> /etc/hosts
+```
 
+
+
+
+```
 chsh -s /usr/bin/zsh 
 
 echo "root sifreni gir"
