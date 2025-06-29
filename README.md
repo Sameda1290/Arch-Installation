@@ -274,29 +274,44 @@ usermod -aG wheel $username
 2. Aşamanın sonu artık nvidia sürücülerini kurmak için 3. Aşamaya geçebiliriz
 
 ## 3. Aşama
-### 
+### NVidia sürücülerinin kurulması (Opsiyonel)
 
+> [!CAUTION]
+> Eğer nvidia ekran kartı kullanmıyorsanız bu aşamayı geçiniz.
 
+Daha chroottan çıkmamamız lazım ki nvidia sürücülerini hemen kurup bu aşamayı geçelim.
 
+```
+pacman -S nvidia-open-dkms nvidia-utils lib32-nvidia-utils
+```
+Bu kod ile nvidia sürücülerini kuracağız
 
+> [!CAUTION]
+> RTX-5xxx ve üstü ekran kartı kullanıyorsanız nvidia-open-dkms yerine nvidia-dkms paketini kurmalısınız.
 
+### Erken KMS ve Modeset
 
+```
+nano /etc/modprobe.d/nvidia.conf
+```
+ile nvidia.conf dosyasını açıyoruz ve içerisine
 
+```
+options nvidia_drm modeset=1
+```
+satırını giriyoruz. Kaydedip çıkıyoruz.<br>Burası modeset'in ilk kısmıydı şimdi mkinitcpio ayarına geçelim
 
+```
+nano /etc/mkinitcpio.conf
+```
 
+dosyasını açıyoruz.
+<br>
+Ve içerisindeki MODULES=(...) kısmına MODULES=(... nvidia nvidia_modeset nvidia_uvm nvidia_drm ...) yazıyoruz.
 
+```
+mkinitcpio -P
+```
+diyerek init sistemimizi yeniliyoruz.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+3. Aşamanın sonu.
