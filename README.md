@@ -195,17 +195,18 @@ echo "::1       localhost" >> /etc/hosts
 echo "127.0.1.1 $hostname.localdomain $hostname" >> /etc/hosts
 ```
 
+Bu kısımda bölge, dili ve sistem adını ayarladık şimdi ipucuyla önemli olan kısma geçelim.
+> [!TIP]
+> $hostname kısmına sisteminize vermek istediğiniz ismi verebilirsiniz. <br> Örnek: ArchLinux
 
+> [!IMPORTANT]
+> Dili lütfen değiştirmeyin en_US olarak kalmalı ki yedek sistemini ayarladığımızda sorun çıkmasın.
 
-
+Yeni adımlarla devam edebiliriz.
 ```
 chsh -s /usr/bin/zsh 
 
-echo "root sifreni gir"
-
 passwd root
-
-echo "$username kullanicisinin sifresini gir"
 
 useradd -m -G wheel $username
 
@@ -216,7 +217,15 @@ passwd $username
 cp /root/.zshrc /home/$username/
 
 cp /root/.zprofile /home/$username/
+```
 
+Bu kısımda root şifresini, kullanıcımızı ve şifresini oluşturduk şimdi ipucu bölümüne geçelim.
+> [!TIP]
+> $username kısmına kullanıcı adınızı girmelisiniz
+
+
+
+```
 systemctl enable NetworkManager
 
 systemctl enable bluetooth
